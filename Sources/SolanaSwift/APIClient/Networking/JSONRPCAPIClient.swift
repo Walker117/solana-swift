@@ -31,7 +31,7 @@ public class JSONRPCAPIClient: SolanaAPIClient {
         do {
             let response: Rpc<BufferInfo<T>?> = try await get(method: "getAccountInfo", params: [
                 account,
-                RequestConfiguration(encoding: "base64"),
+                RequestConfiguration(commitment: "processed", encoding: "base64"),
             ])
             return response.value
         } catch is BinaryReaderError {
