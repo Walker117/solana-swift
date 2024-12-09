@@ -94,6 +94,26 @@ public class JSONRPCAPIClient: SolanaAPIClient {
         let result: Rpc<Fee> = try await get(method: "getFees", params: [RequestConfiguration(commitment: commitment)])
         return result.value
     }
+    
+    public func getFeeForMessage(message: String) async throws -> UInt64? {
+        let response: Rpc<FeeForMessageResult> = try await get(
+            method: "getFeeForMessage",
+            params: [
+                message,
+                RequestConfiguration(commitment: "processed")
+            ]
+        )
+        return response.value.value
+    }
+
+    struct FeeForMessageResult: Codable {
+        let context: Context
+        let value: UInt64? // The fee in lamports
+    }
+
+    struct Context: Codable {
+        let slot: UInt64
+    }
 
     public func getMinimumBalanceForRentExemption(dataLength: UInt64,
                                                   commitment: Commitment? = "recent") async throws -> UInt64

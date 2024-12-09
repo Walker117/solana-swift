@@ -34,11 +34,17 @@ public class BlockchainClient: SolanaBlockchainClient {
         if let fc = fc {
             feeCalculator = fc
         } else {
-            let (lps, minRentExemption) = try await(
-                apiClient.getFees(commitment: nil).feeCalculator?.lamportsPerSignature,
-                apiClient.getMinimumBalanceForRentExemption(span: 165)
-            )
-            let lamportsPerSignature = lps ?? 5000
+            // Get the minimum rent exemption
+            let minRentExemption = try await apiClient.getMinimumBalanceForRentExemption(span: 165)
+
+            // Compile the transaction message
+            let compiledMessage = try transaction.compileMessage()
+            let base64EncodedMessage = try compiledMessage.serialize().base64EncodedString()
+
+            // Get the fee for the compiled message
+            let lamportsPerSignature = try await apiClient.getFeeForMessage(message: base64EncodedMessage) ?? 5000
+
+            // Create the fee calculator
             feeCalculator = DefaultFeeCalculator(
                 lamportsPerSignature: lamportsPerSignature,
                 minRentExemption: minRentExemption

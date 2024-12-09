@@ -343,4 +343,10 @@ public protocol SolanaAPIClient {
     func getSlot() async throws -> UInt64
 
     func getAddressLookupTable(accountKey: PublicKey) async throws -> AddressLookupTableAccount?
+    
+    /// Get the fee for a serialized message
+    /// - Parameters:
+    ///   - message: Base64-encoded serialized transaction message
+    /// - Returns: The fee in lamports for the message
+    func getFeeForMessage(message: String) async throws -> UInt64?
 }
